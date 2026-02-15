@@ -16,18 +16,6 @@ struct RedditHomeView: View {
     var body: some View {
         NavigationStack{
             VStack{
-                HStack{
-                    TextField("Type subreddit", text: $subreddit)
-                        .textFieldStyle(.roundedBorder)
-                    Button {
-                            viewModel.fetchPostsBySubreddit(subreddit: subreddit)
-                    } label: {
-                        Text("Search")
-                    }
-                    .disabled(subreddit.isEmpty)
-                }
-                .padding()
-                
                 if viewModel.isLoading {
                     Spacer()
                     ProgressView()
@@ -49,6 +37,10 @@ struct RedditHomeView: View {
             }
             .navigationTitle("reddit")
         }
+        .searchable(text: $subreddit, placement: .navigationBarDrawer(displayMode: .always), prompt: "Enter subreddit")
+        .onSubmit(of: .search, {
+            viewModel.fetchPostsBySubreddit(subreddit: subreddit)
+        })
         .fullScreenCover(item: $selectedPost) { post in
             if let urlString = post.url, let url = URL(string: urlString) {
                 //RedditWebView(webViewURL: url)
